@@ -331,19 +331,6 @@ describe( 'effects', () => {
 
 			expect( dispatch ).toHaveBeenCalledTimes( 0 );
 		} );
-
-		it( 'should dispatch dirtying action if edits linger after autosave', () => {
-			const dispatch = jest.fn();
-			const store = { dispatch, getState: createGetState( true ) };
-
-			const previousPost = getPublishedPost();
-			const post = { ...getPublishedPost(), id: defaultPost.id + 1 };
-
-			handler( { post, previousPost, isAutosave: true }, store );
-
-			expect( dispatch ).toHaveBeenCalledTimes( 1 );
-			expect( dispatch ).toHaveBeenCalledWith( { type: 'DIRTY_ARTIFICIALLY' } );
-		} );
 	} );
 
 	describe( '.REQUEST_POST_UPDATE_FAILURE', () => {
