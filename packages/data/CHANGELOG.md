@@ -1,10 +1,16 @@
+## 2.1.5 (Unreleased)
+
+### Internal
+
+- Replace Redux implementation of `combineReducers` with in-place-compatible `turbo-combine-reducers`.
+
 ## 2.1.4 (2018-10-19)
 
 ## 2.1.3 (2018-10-18)
 
 ## 2.1.0 (2018-09-30)
 
-## New Features
+### New Features
 
 - Adding support for using controls in resolvers using the controls plugin.
 
@@ -16,7 +22,7 @@
 
 - Writing resolvers as async generators has been deprecated. Use the controls plugin instead.
 
-## Bug Fixes
+### Bug Fixes
 
 - Fix the promise middleware in Firefox.
 
