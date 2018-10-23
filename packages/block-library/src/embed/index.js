@@ -15,7 +15,7 @@ export const name = 'core/embed';
 
 export const settings = getEmbedBlockSettings( {
 	title: __( 'Embed' ),
-	description: __( 'The Embed block allows you to easily add videos, images, tweets, audio, and other content to your post or page.' ),
+	description: __( 'Embed videos, images, tweets, audio, and other content from external sources.' ),
 	icon: embedContentIcon,
 	transforms: {
 		from: [
