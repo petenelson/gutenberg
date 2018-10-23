@@ -15,7 +15,7 @@ import {
 	withColors,
 } from '@wordpress/editor';
 import { Component, Fragment } from '@wordpress/element';
-import { Toolbar } from '@wordpress/components';
+import { PanelBody, ToggleControl, Toolbar } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -108,12 +108,13 @@ class MediaTextEdit extends Component {
 			setAttributes,
 			setBackgroundColor,
 		} = this.props;
-		const { mediaPosition, mediaWidth } = attributes;
+		const { mediaPosition, mediaWidth, isStackedOnMobile } = attributes;
 		const temporaryMediaWidth = this.state.mediaWidth;
 		const classNames = classnames( className, {
 			'has-media-on-the-right': 'right' === mediaPosition,
 			'is-selected': isSelected,
 			[ backgroundColor.class ]: backgroundColor.class,
+			'is-stacked-on-mobile': isStackedOnMobile,
 		} );
 		const widthString = `${ temporaryMediaWidth || mediaWidth }%`;
 		const style = {
@@ -139,6 +140,15 @@ class MediaTextEdit extends Component {
 		return (
 			<Fragment>
 				<InspectorControls>
+					<PanelBody title={ __( 'Media & Text Settings' ) }>
+						<ToggleControl
+							label={ __( 'Stack on mobile' ) }
+							checked={ isStackedOnMobile }
+							onChange={ () => setAttributes( {
+								isStackedOnMobile: ! isStackedOnMobile,
+							} ) }
+						/>
+					</PanelBody>
 					<PanelColorSettings
 						title={ __( 'Color Settings' ) }
 						initialOpen={ false }
