@@ -341,7 +341,6 @@ export const settings = {
 								} :
 								undefined
 						}
-						onPasteBlocks={ insertBlocksAfter }
 						onRemove={ () => onReplace( [] ) }
 					/>
 				</Fragment>
