@@ -323,7 +323,7 @@ export const settings = {
 						className={ className }
 						placeholder={ __( 'Write list…' ) }
 						onMerge={ mergeBlocks }
-						onSplit={
+						onInsertAfter={
 							insertBlocksAfter ?
 								( value ) => {
 									const blocks = [
