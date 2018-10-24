@@ -907,6 +907,18 @@ Returns true if the user is typing, or false otherwise.
 
 Whether user is typing.
 
+### isCaretWithinFormattedText
+
+Returns true if the caret is within formatted text, or false otherwise.
+
+*Parameters*
+
+ * state: Global application state.
+
+*Returns*
+
+Whether the caret is within formatted text.
+
 ### getBlockInsertionPoint
 
 Returns the insertion point, the index at which the new inserted block would
@@ -1623,6 +1635,14 @@ Returns an action object used in signalling that the user has begun to type.
 ### stopTyping
 
 Returns an action object used in signalling that the user has stopped typing.
+
+### enterFormattedText
+
+Returns an action object used in signalling that the caret has entered formatted text.
+
+### leaveFormattedText
+
+Returns an action object used in signalling that the user caret has left formatted text.
 
 ### createNotice
 
