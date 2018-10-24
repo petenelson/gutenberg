@@ -320,7 +320,7 @@ export class RichText extends Component {
 			} else if ( this.props.onSplit ) {
 				// Necessary to get the right range.
 				// Also done in the TinyMCE paste plugin.
-				this.props.setTimeout( () => this.splitContent( content ) );
+				this.props.setTimeout( () => this.onPasteBlocks( content ) );
 			}
 
 			return;
@@ -346,16 +346,19 @@ export class RichText extends Component {
 			}
 		}
 
-		const shouldReplace = this.props.onReplace && this.isEmpty();
+		const canReplace = this.props.onReplace && this.isEmpty();
+		const canSplit = !! this.props.onSplit;
+		const canPasteBlocks = !! this.props.onPasteBlocks;
 
 		let mode = 'INLINE';
 
-		if ( shouldReplace ) {
+		if ( canReplace ) {
 			mode = 'BLOCKS';
-		} else if ( this.props.onSplit ) {
+		} else if ( canSplit && canPasteBlocks ) {
 			mode = 'AUTO';
 		}
 
+		const record = this.getRecord();
 		const content = rawHandler( {
 			HTML: html,
 			plainText,
@@ -365,17 +368,12 @@ export class RichText extends Component {
 		} );
 
 		if ( typeof content === 'string' ) {
-			const recordToInsert = create( { html: content } );
-			this.onChange( insert( this.getRecord(), recordToInsert ) );
-		} else if ( this.props.onSplit ) {
-			if ( ! content.length ) {
-				return;
-			}
-
-			if ( shouldReplace ) {
+			this.onChange( insert( record, create( { html: content } ) ) );
+		} else if ( content.length > 0 ) {} {
+			if ( canReplace ) {
 				this.props.onReplace( content );
 			} else {
-				this.splitContent( content, { paste: true } );
+				this.onPasteBlocks( content );
 			}
 		}
 	}
@@ -583,6 +581,7 @@ export class RichText extends Component {
 	 */
 	onKeyDown( event ) {
 		const { keyCode } = event;
+		const { onSplit } = this.props;
 
 		const isDelete = keyCode === DELETE || keyCode === BACKSPACE;
 		if ( isDelete ) {
@@ -599,8 +598,10 @@ export class RichText extends Component {
 		if ( keyCode === ENTER ) {
 			event.preventDefault();
 
+			const record = this.createRecord();
+
 			if ( this.props.onReplace ) {
-				const text = getTextContent( this.getRecord() );
+				const text = getTextContent( record );
 				const transformation = findTransform( this.enterPatterns, ( item ) => {
 					return item.regExp.test( text );
 				} );
@@ -618,16 +619,15 @@ export class RichText extends Component {
 			}
 
 			if ( this.multilineTag ) {
-				const record = this.getRecord();
-
-				if ( this.props.onSplit && isEmptyLine( record ) ) {
-					this.props.onSplit( ...split( record ).map( this.valueToFormat ) );
+				if ( onSplit && isEmptyLine( record ) ) {
+					const [ before, after ] = split( record );
+					onSplit( this.valueToFormat( after ) );
+					this.onChange( before );
 				} else {
 					// Character is used to separate lines in multiline values.
 					this.onChange( insert( record, '\u2028' ) );
 				}
-			} else if ( event.shiftKey || ! this.props.onSplit ) {
-				const record = this.getRecord();
+			} else if ( event.shiftKey || ! onSplit ) {
 				const text = getTextContent( record );
 				const length = text.length;
 				let toInsert = '\n';
@@ -644,7 +644,9 @@ export class RichText extends Component {
 
 				this.onChange( insert( this.getRecord(), toInsert ) );
 			} else {
-				this.splitContent();
+				const [ before, after ] = split( record );
+				onSplit( this.valueToFormat( after ) );
+				this.onChange( before );
 			}
 		}
 	}
@@ -706,43 +708,25 @@ export class RichText extends Component {
 	 * @param {Array}  blocks  The blocks to add after the split point.
 	 * @param {Object} context The context for splitting.
 	 */
-	splitContent( blocks = [], context = {} ) {
-		const { onSplit } = this.props;
-		const record = this.createRecord();
+	onPasteBlocks( blocks = [] ) {
+		const { onSplit, onRemove, onPasteBlocks } = this.props;
+		const [ before, after ] = split( this.getRecord() );
 
-		if ( ! onSplit ) {
-			return;
+		if ( onSplit && ! isEmpty( after ) ) {
+			onSplit( this.valueToFormat( after ) );
 		}
 
-		let [ before, after ] = split( record );
-
-		// In case split occurs at the trailing or leading edge of the field,
-		// assume that the before/after values respectively reflect the current
-		// value. This also provides an opportunity for the parent component to
-		// determine whether the before/after value has changed using a trivial
-		//  strict equality operation.
-		if ( isEmpty( after ) ) {
-			before = record;
-		} else if ( isEmpty( before ) ) {
-			after = record;
+		if ( onPasteBlocks ) {
+			onPasteBlocks( blocks );
 		}
 
-		// If pasting and the split would result in no content other than the
-		// pasted blocks, remove the before and after blocks.
-		if ( context.paste ) {
-			before = isEmpty( before ) ? null : before;
-			after = isEmpty( after ) ? null : after;
+		if ( onSplit ) {
+			if ( ! isEmpty( before ) || ! onRemove ) {
+				this.onChange( before );
+			} else {
+				onRemove();
+			}
 		}
-
-		if ( before ) {
-			before = this.valueToFormat( before );
-		}
-
-		if ( after ) {
-			after = this.valueToFormat( after );
-		}
-
-		onSplit( before, after, ...blocks );
 	}
 
 	onNodeChange( { parents } ) {

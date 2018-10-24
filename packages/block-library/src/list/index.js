@@ -277,7 +277,6 @@ export const settings = {
 			const {
 				attributes,
 				insertBlocksAfter,
-				setAttributes,
 				mergeBlocks,
 				onReplace,
 				className,
@@ -326,23 +325,23 @@ export const settings = {
 						onMerge={ mergeBlocks }
 						onSplit={
 							insertBlocksAfter ?
-								( before, after, ...blocks ) => {
-									if ( ! blocks.length ) {
-										blocks.push( createBlock( 'core/paragraph' ) );
-									}
+								( value ) => {
+									const blocks = [
+										createBlock( 'core/paragraph' ),
+									];
 
-									if ( after !== '<li></li>' ) {
+									if ( value !== '<li></li>' ) {
 										blocks.push( createBlock( 'core/list', {
 											ordered,
-											values: after,
+											values: value,
 										} ) );
 									}
 
-									setAttributes( { values: before } );
 									insertBlocksAfter( blocks );
 								} :
 								undefined
 						}
+						onPasteBlocks={ insertBlocksAfter }
 						onRemove={ () => onReplace( [] ) }
 					/>
 				</Fragment>
