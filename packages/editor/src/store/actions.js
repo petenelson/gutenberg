@@ -537,6 +537,28 @@ export function stopTyping() {
 }
 
 /**
+ * Returns an action object used in signalling that the caret has entered formatted text.
+ *
+ * @return {Object} Action object.
+ */
+export function enterFormattedText() {
+	return {
+		type: 'ENTER_FORMATTED_TEXT',
+	};
+}
+
+/**
+ * Returns an action object used in signalling that the user caret has left formatted text.
+ *
+ * @return {Object} Action object.
+ */
+export function leaveFormattedText() {
+	return {
+		type: 'LEAVE_FORMATTED_TEXT',
+	};
+}
+
+/**
  * Returns an action object used to create a notice.
  *
  * @param {string}    status  The notice status.
