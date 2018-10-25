@@ -6,7 +6,7 @@ import {
 	startTyping,
 	stopTyping,
 	enterFormattedText,
-	leaveFormattedText,
+	exitFormattedText,
 	fetchReusableBlocks,
 	saveReusableBlock,
 	deleteReusableBlock,
@@ -362,10 +362,10 @@ describe( 'actions', () => {
 		} );
 	} );
 
-	describe( 'leaveFormattedText', () => {
-		it( 'should return the LEAVE_FORMATTED_TEXT action', () => {
-			expect( leaveFormattedText() ).toEqual( {
-				type: 'LEAVE_FORMATTED_TEXT',
+	describe( 'exitFormattedText', () => {
+		it( 'should return the EXIT_FORMATTED_TEXT action', () => {
+			expect( exitFormattedText() ).toEqual( {
+				type: 'EXIT_FORMATTED_TEXT',
 			} );
 		} );
 	} );
