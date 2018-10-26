@@ -33,7 +33,10 @@ describe( 'withDispatch', () => {
 			const { count } = ownProps;
 
 			return {
-				increment: () => _dispatch( 'counter' ).increment( count ),
+				increment: () => {
+					const actionReturnedFromDispatch = _dispatch( 'counter' ).increment( count );
+					expect( actionReturnedFromDispatch ).toBe( undefined );
+				},
 			};
 		} )( ( props ) => <button onClick={ props.increment } /> );
 
@@ -60,5 +63,32 @@ describe( 'withDispatch', () => {
 		incrementBeforeSetProps();
 
 		expect( store.getState() ).toBe( 2 );
+	} );
+
+	it( 'return the value returned by the registry dispatch call', () => {
+		expect.assertions( 1 );
+
+		const Component = withDispatch( ( _dispatch ) => {
+			return {
+				increment: () => {
+					const actionReturnedFromDispatch = _dispatch( 'counter' ).increment();
+					expect( actionReturnedFromDispatch ).toBe( 'incremented' );
+				},
+			};
+		} )( ( props ) => <button onClick={ props.increment } /> );
+
+		const testRenderer = TestRenderer.create(
+			<RegistryProvider value={ {
+				dispatch: () => ( {
+					increment: () => 'incremented',
+				} ),
+			} }>
+				<Component />
+			</RegistryProvider>
+		);
+		const testInstance = testRenderer.root;
+		const incrementBeforeSetProps = testInstance.findByType( 'button' ).props.onClick;
+
+		incrementBeforeSetProps();
 	} );
 } );
