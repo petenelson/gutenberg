@@ -106,6 +106,18 @@ export function toTree( value, multilineTag, settings ) {
 			} );
 		}
 
+		if ( isEditableTree && formatPlaceholder && formatPlaceholder.index === 0 ) {
+			const parent = getParent( pointer );
+
+			if ( formatPlaceholder.format === undefined ) {
+				pointer = getParent( parent );
+			} else {
+				pointer = append( parent, fromFormat( formatPlaceholder.format ) );
+			}
+
+			pointer = append( pointer, '' );
+		}
+
 		// If there is selection at 0, handle it before characters are inserted.
 
 		if ( onStartIndex && start === 0 && i === 0 ) {
