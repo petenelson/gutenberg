@@ -68,8 +68,9 @@ export function toTree( value, multilineTag, settings ) {
 		onStartIndex,
 		onEndIndex,
 		onEmpty,
+		isEditableTree,
 	} = settings;
-	const { formats, text, start, end } = value;
+	const { formats, text, start, end, formatPlaceholder } = value;
 	const formatsLength = formats.length + 1;
 	const tree = createEmpty( tag );
 
@@ -125,6 +126,18 @@ export function toTree( value, multilineTag, settings ) {
 			} else {
 				appendText( pointer, character );
 			}
+		}
+
+		if ( isEditableTree && formatPlaceholder && formatPlaceholder.index === i + 1 ) {
+			const parent = getParent( pointer );
+
+			if ( formatPlaceholder.format === undefined ) {
+				pointer = getParent( parent );
+			} else {
+				pointer = append( parent, fromFormat( formatPlaceholder.format ) );
+			}
+
+			pointer = append( pointer, '' );
 		}
 
 		if ( onStartIndex && start === i + 1 ) {

@@ -142,6 +142,7 @@ export function toDom( value, multilineTag ) {
 			br.setAttribute( 'data-mce-bogus', '1' );
 			body.appendChild( br );
 		},
+		isEditableTree: true,
 	} );
 
 	return {
